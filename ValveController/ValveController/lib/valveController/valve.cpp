@@ -35,8 +35,8 @@ bool ValveController::activateValve(){
     if (isAvailable()) {
         ESP_ERROR_CHECK(esp_timer_start_once(timer, timeout));
         
-        //uint8_t current = expander->readGPIO();
-        //expander->writeGPIO(current || (1 << id));
+        uint8_t current = expander->readGPIO();
+        expander->writeGPIO(current || (1 << id));
         
         activated = true;
     }
