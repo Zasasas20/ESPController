@@ -7,19 +7,21 @@ ValveController::ValveController(Adafruit_MCP23X08 * exp, int valveID):
     id{valveID},
     timeout{defaultTimeout}
 {
+
+    args = new V_Args;
+    args->exp = exp;
+    args->id = valveID;
     const esp_timer_create_args_t timer_args = {
         .callback = &onTimerEnd,
-        .arg = (void *) this,
+        .arg = (void *) args,
         .name = "valve-timer"
     };
 
     ESP_ERROR_CHECK(esp_timer_create(&timer_args, &timer));
 }
     
-int ValveController::setTimeout(int time){
+void ValveController::setTimeout(uint64_t time){
     timeout = time;
-
-    return timeout;
 }
 
 bool ValveController::isActive(){
@@ -32,11 +34,12 @@ bool ValveController::isAvailable(){
 
 bool ValveController::activateValve(){
     bool activated = false;
+    if (!isActive()) return true;
     if (isAvailable()) {
         ESP_ERROR_CHECK(esp_timer_start_once(timer, timeout));
         
         uint8_t current = expander->readGPIO();
-        expander->writeGPIO(current || (1 << id));
+        expander->writeGPIO(current | (1 << id - 1));
         
         activated = true;
     }
@@ -57,8 +60,8 @@ int ValveController::getId() {
 }
     
 void ValveController::onTimerEnd(void* arg){
-    ValveController* controller = (ValveController *) arg;
+    V_Args* args = (V_Args *) arg;
 
-    uint8_t current = controller->getExpander()->readGPIO();
-    controller->getExpander()->writeGPIO(current || (0 << controller->getId()));
+    uint8_t current = args->exp->readGPIO();
+    args->exp->writeGPIO(current & (0 << args->id - 1));
 }

@@ -69,6 +69,8 @@ void setup() {
     valves.push_back(ValveController(&mcp, i+1));
   }
 
+  mcp.writeGPIO(0x00);
+
   // Initialize FastAccelStepper engine
   engine.init();
 

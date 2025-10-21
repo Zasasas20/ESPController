@@ -1,6 +1,6 @@
 import serial
 
-ser = serial.Serial("/dev/ttyUSB1", 115200)
+ser = serial.Serial("/dev/ttyACM1", 115200)
 
 def openValve(valveID):
     ser.write(bytes(f'P{valveID}', encoding='utf8'))

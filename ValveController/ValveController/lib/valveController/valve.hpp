@@ -4,11 +4,16 @@
 #include <Adafruit_MCP23X08.h> // Use Adafruit library for the I/O expander
 #include "esp_timer.h" // Used for timeouts
 
+struct V_Args {
+    Adafruit_MCP23X08* exp;
+    int id;
+};
+
 class ValveController{
 public:
     ValveController(Adafruit_MCP23X08 * exp, int valveID);
 
-    int setTimeout(int time);
+    void setTimeout(uint64_t time);
     bool isAvailable();
     bool activateValve();
     bool toggleValve(bool enable);
@@ -19,9 +24,10 @@ public:
 private:
 
     static void onTimerEnd(void* arg);
-    Adafruit_MCP23X08* expander {nullptr};
+    Adafruit_MCP23X08* expander { nullptr };
+    V_Args* args { nullptr };
     esp_timer_handle_t timer;
-    int timeout;
+    uint64_t timeout;
     int id;
     bool active {true};
 };
