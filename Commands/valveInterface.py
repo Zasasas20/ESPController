@@ -4,7 +4,10 @@ ser = None
 try:
     ser = serial.Serial("/dev/ttyACM0", 115200)
 except serial.serialutil.SerialException:
-    ser = serial.Serial("/dev/ttyACM1", 115200)
+    try:
+        ser = serial.Serial("/dev/ttyACM1", 115200)
+    except serial.serialutil.SerialException:
+        ser = serial.Serial("/dev/ttyUSB0", 115200)
 
 def openValve(valveID):
     ser.write(bytes(f'P{valveID}', encoding='utf8'))
