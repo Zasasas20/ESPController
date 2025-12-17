@@ -63,5 +63,5 @@ void ValveController::onTimerEnd(void* arg){
     V_Args* args = (V_Args *) arg;
 
     uint8_t current = args->exp->readGPIO();
-    args->exp->writeGPIO(current & (0 << args->id - 1));
+    args->exp->writeGPIO(current & ~(1 << args->id - 1));
 }
